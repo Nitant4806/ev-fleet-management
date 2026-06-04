@@ -1,0 +1,2 @@
+
+CREATE DATABASE ev_fleet;
