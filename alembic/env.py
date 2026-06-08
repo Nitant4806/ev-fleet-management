@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 # Now import your Base and DATABASE_URL
 from app.database import Base, DATABASE_URL
+from app.models.vehicle import Vehicle
 
 config = context.config
 fileConfig(config.config_file_name)

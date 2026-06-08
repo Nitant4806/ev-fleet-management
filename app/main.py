@@ -1,13 +1,28 @@
 from fastapi import FastAPI
+from sqlalchemy import text
+from app.database import get_db
+from fastapi import Depends
+from sqlalchemy.orm import Session
+from app.routes.vehicle import router as vehicle_router
 
-
-app=FastAPI(
-    title="Ev fleet management API ",
-    version="1.0.0"
+app = FastAPI(
+    title="EV Fleet Management API",
+    version="1.0.0",
+    description="Intelligent charging optimization for electric vehicle fleets",
 )
+
+app.include_router(vehicle_router)
+
 
 @app.get("/")
 def root():
-    return {
-        "message":"Ev fleet API is running"
-    }
+    return {"message": "EV Fleet API is running", "version": "1.0.0"}
+
+
+@app.get("/health")
+def health(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected"}
+    except Exception as e:
+        return {"status": "error", "database": str(e)}

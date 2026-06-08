@@ -3,6 +3,8 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, CheckConstraint
 from datetime import datetime
 
 from app.database import Base
+from app.core.enums import VehicleStatus
+from sqlalchemy import Enum as SAEnum
 
 
 class Vehicle(Base):
@@ -26,7 +28,7 @@ class Vehicle(Base):
 
     efficiency_kwh_per_km = Column(Float, nullable=False)
 
-    status = Column(String, nullable=False, default="available")
+    status = Column(String, nullable=False)
 
     location_name = Column(String, nullable=False)
 
