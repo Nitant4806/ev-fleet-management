@@ -12,14 +12,10 @@ router = APIRouter()
 
 
 @router.post("/stations")
-def create_station(
-    station: ChargingStationCreate,
-    db: Session = Depends(get_db)
-):
+def create_station(station: ChargingStationCreate, db: Session = Depends(get_db)):
     if station.available_chargers > station.total_chargers:
         raise HTTPException(
-            status_code=400,
-            detail="Available chargers cannot exceed total chargers"
+            status_code=400, detail="Available chargers cannot exceed total chargers"
         )
 
     new_station = ChargingStation(
@@ -40,57 +36,32 @@ def create_station(
 
 
 @router.get("/stations")
-def get_stations(
-    db: Session = Depends(get_db)
-):
+def get_stations(db: Session = Depends(get_db)):
     return db.query(ChargingStation).all()
 
 
 @router.get("/stations/{station_id}")
-def get_station(
-    station_id: int,
-    db: Session = Depends(get_db)
-):
-    station = (
-        db.query(ChargingStation)
-        .filter(ChargingStation.id == station_id)
-        .first()
-    )
+def get_station(station_id: int, db: Session = Depends(get_db)):
+    station = db.query(ChargingStation).filter(ChargingStation.id == station_id).first()
 
     if station is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Station not found"
-        )
+        raise HTTPException(status_code=404, detail="Station not found")
 
     return station
 
 
 @router.put("/stations/{station_id}")
 def update_station(
-    station_id: int,
-    station_data: ChargingStationUpdate,
-    db: Session = Depends(get_db)
+    station_id: int, station_data: ChargingStationUpdate, db: Session = Depends(get_db)
 ):
-    station = (
-        db.query(ChargingStation)
-        .filter(ChargingStation.id == station_id)
-        .first()
-    )
+    station = db.query(ChargingStation).filter(ChargingStation.id == station_id).first()
 
     if station is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Station not found"
-        )
+        raise HTTPException(status_code=404, detail="Station not found")
 
-    if (
-        station_data.available_chargers
-        > station_data.total_chargers
-    ):
+    if station_data.available_chargers > station_data.total_chargers:
         raise HTTPException(
-            status_code=400,
-            detail="Available chargers cannot exceed total chargers"
+            status_code=400, detail="Available chargers cannot exceed total chargers"
         )
 
     for field, value in station_data.model_dump().items():
@@ -106,25 +77,13 @@ def update_station(
 
 
 @router.delete("/stations/{station_id}")
-def delete_station(
-    station_id: int,
-    db: Session = Depends(get_db)
-):
-    station = (
-        db.query(ChargingStation)
-        .filter(ChargingStation.id == station_id)
-        .first()
-    )
+def delete_station(station_id: int, db: Session = Depends(get_db)):
+    station = db.query(ChargingStation).filter(ChargingStation.id == station_id).first()
 
     if station is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Station not found"
-        )
+        raise HTTPException(status_code=404, detail="Station not found")
 
     db.delete(station)
     db.commit()
 
-    return {
-        "message": "Station deleted successfully"
-    }
+    return {"message": "Station deleted successfully"}
