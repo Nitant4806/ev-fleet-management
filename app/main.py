@@ -4,6 +4,7 @@ from app.database import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.routes.vehicle import router as vehicle_router
+from app.routes.trip import router as trip_router
 
 app = FastAPI(
     title="EV Fleet Management API",
@@ -12,6 +13,7 @@ app = FastAPI(
 )
 
 app.include_router(vehicle_router)
+app.include_router(trip_router)
 
 
 @app.get("/")

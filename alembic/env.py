@@ -1,36 +1,43 @@
-import sys
 import os
+import sys
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
+
 from alembic import context
 
-# --- THIS IS THE FIX ---
-# Add project root to Python path so "from app.database import Base" works
+# Add project root to Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Now import your Base and DATABASE_URL
-from app.database import Base, DATABASE_URL
+# Import Base and DATABASE_URL
+from app.database import DATABASE_URL, Base
 from app.models.vehicle import Vehicle
+from app.models.trip import Trip
+
+# Import ALL models here
 
 config = context.config
-fileConfig(config.config_file_name)
 
-# Tell Alembic about your models
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# Metadata for Alembic
 target_metadata = Base.metadata
 
-# Override the URL from your .env instead of alembic.ini
+# Use DATABASE_URL from your application
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
+
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
+
     with context.begin_transaction():
         context.run_migrations()
 
@@ -41,11 +48,13 @@ def run_migrations_online() -> None:
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
+
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
         )
+
         with context.begin_transaction():
             context.run_migrations()
 
