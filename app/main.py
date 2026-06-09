@@ -5,12 +5,17 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.routes.vehicle import router as vehicle_router
 from app.routes.trip import router as trip_router
+from app.routes.charging_station import (
+    router as charging_station_router
+)
 
 app = FastAPI(
     title="EV Fleet Management API",
     version="1.0.0",
     description="Intelligent charging optimization for electric vehicle fleets",
 )
+
+app.include_router(charging_station_router)
 
 app.include_router(vehicle_router)
 app.include_router(trip_router)

@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from app.database import DATABASE_URL, Base
 from app.models.vehicle import Vehicle
 from app.models.trip import Trip
+from app.models.charging_station import ChargingStation
 
 # Import ALL models here
 
