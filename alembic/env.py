@@ -15,6 +15,7 @@ from app.models.vehicle import Vehicle
 from app.models.trip import Trip
 from app.models.charging_station import ChargingStation
 from app.models.charging_session import ChargingSession
+from app.models.user import User
 
 # Import ALL models here
 
