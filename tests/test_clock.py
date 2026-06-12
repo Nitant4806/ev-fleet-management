@@ -1,13 +1,11 @@
 from time import sleep
 
 from app.services.simulation_clock import (
-    SimulationClock,
+    get_simulated_time,
 )
-
-clock = SimulationClock()
 
 for _ in range(5):
 
-    print(clock.now())
+    print(get_simulated_time())
 
     sleep(1)

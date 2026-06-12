@@ -24,6 +24,25 @@ class ChargingStation(Base):
 
     available_chargers = Column(Integer, nullable=False)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    max_power_kw = Column(
+        Integer,
+        nullable=False,
+        default=60,
+    )
 
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    avg_queue_minutes = Column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+    )
+
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+    )

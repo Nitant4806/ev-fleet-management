@@ -20,3 +20,11 @@ class SimulationClock:
         elapsed_sim_seconds = elapsed_real_seconds * self.SIMULATION_SPEED
 
         return self.start_sim_time + timedelta(seconds=elapsed_sim_seconds)
+
+
+simulation_clock = SimulationClock()
+
+
+def get_simulated_time():
+
+    return simulation_clock.now()

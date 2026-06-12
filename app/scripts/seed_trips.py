@@ -35,23 +35,19 @@ for _ in range(500):
 
     start_location = random.choice(LOCATIONS)
 
-    destination = random.choice(
-        [loc for loc in LOCATIONS if loc != start_location]
-    )
+    destination = random.choice([loc for loc in LOCATIONS if loc != start_location])
 
     distance_km = round(
         random.uniform(2, 35),
         2,
     )
 
-    estimated_duration_minutes = int(
-        distance_km * random.uniform(2.5, 3.5)
-    )
+    estimated_duration_minutes = int(distance_km * random.uniform(2.5, 3.5))
 
     # Rush-hour weighted scheduling
     hour = random.choices(
         population=[
-            8,   # morning rush
+            8,  # morning rush
             9,
             18,  # evening rush
             19,
@@ -69,22 +65,14 @@ for _ in range(500):
 
     day_offset = random.randint(0, 7)
 
-    scheduled_start_at = (
-        datetime.utcnow()
-        + timedelta(days=day_offset)
-    ).replace(
+    scheduled_start_at = (datetime.utcnow() + timedelta(days=day_offset)).replace(
         hour=hour,
         minute=random.randint(0, 59),
         second=0,
         microsecond=0,
     )
 
-    expected_end_at = (
-        scheduled_start_at
-        + timedelta(
-            minutes=estimated_duration_minutes
-        )
-    )
+    expected_end_at = scheduled_start_at + timedelta(minutes=estimated_duration_minutes)
 
     trip = Trip(
         vehicle_id=vehicle.id,

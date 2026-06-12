@@ -17,8 +17,7 @@ vehicle = Vehicle(
 trip = Trip(
     id=1,
     distance_km=50,
-    scheduled_start_at=datetime.utcnow()
-    + timedelta(hours=2),
+    scheduled_start_at=datetime.utcnow() + timedelta(hours=2),
 )
 
 result = evaluate_vehicle_risk(
