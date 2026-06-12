@@ -28,6 +28,27 @@ class Trip(Base):
         default=TripStatus.PENDING,
     )
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+    )
 
-    completed_at = Column(DateTime, nullable=True)
+    scheduled_start_at = Column(
+        DateTime,
+        nullable=True,
+    )
+
+    started_at = Column(
+        DateTime,
+        nullable=True,
+    )
+
+    expected_end_at = Column(
+        DateTime,
+        nullable=True,
+    )
+
+    completed_at = Column(
+        DateTime,
+        nullable=True,
+    )
