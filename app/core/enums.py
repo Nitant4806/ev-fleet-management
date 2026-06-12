@@ -3,8 +3,11 @@ from enum import Enum
 
 class VehicleStatus(str, Enum):
     AVAILABLE = "available"
-    CHARGING = "charging"
+    DISPATCHED = "dispatched"
     ON_TRIP = "on_trip"
+    RETURNED = "returned"
+    NEEDS_CHARGING = "needs_charging"
+    CHARGING = "charging"
     MAINTENANCE = "maintenance"
     OFFLINE = "offline"
 

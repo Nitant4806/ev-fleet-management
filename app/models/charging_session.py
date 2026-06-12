@@ -9,7 +9,8 @@ from sqlalchemy import (
 )
 
 from datetime import datetime
-
+from app.core.enums import ChargingSessionStatus
+from sqlalchemy import Enum as SAEnum
 from app.database import Base
 
 
@@ -60,11 +61,12 @@ class ChargingSession(Base):
     )
 
     status = Column(
-        String,
+        SAEnum(
+            ChargingSessionStatus, values_callable=lambda obj: [e.value for e in obj]
+        ),
         nullable=False,
-        default="scheduled",
+        default=ChargingSessionStatus.SCHEDULED,
     )
-
     started_at = Column(
         DateTime,
         nullable=True,

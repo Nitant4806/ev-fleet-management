@@ -28,8 +28,11 @@ class Vehicle(Base):
 
     efficiency_kwh_per_km = Column(Float, nullable=False)
 
-    status = Column(String, nullable=False)
-
+    status = Column(
+        SAEnum(VehicleStatus, values_callable=lambda obj: [e.value for e in obj]),
+        nullable=False,
+        default=VehicleStatus.AVAILABLE,
+    )
     location_name = Column(String, nullable=False)
 
     created_at = Column(DateTime, default=datetime.utcnow)

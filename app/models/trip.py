@@ -1,8 +1,10 @@
+from app.core.enums import TripStatus
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 
 from datetime import datetime
-
 from app.database import Base
+
+from sqlalchemy import Enum as SAEnum
 
 
 class Trip(Base):
@@ -20,7 +22,11 @@ class Trip(Base):
 
     estimated_duration_minutes = Column(Integer, nullable=False)
 
-    status = Column(String, nullable=False, default="pending")
+    status = Column(
+        SAEnum(TripStatus, values_callable=lambda obj: [e.value for e in obj]),
+        nullable=False,
+        default=TripStatus.PENDING,
+    )
 
     created_at = Column(DateTime, default=datetime.utcnow)
 
