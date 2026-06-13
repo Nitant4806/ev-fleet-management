@@ -1,4 +1,12 @@
-from sqlalchemy import Column, Integer, String, DateTime, CheckConstraint
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    CheckConstraint,
+)
+
+from sqlalchemy.orm import relationship
 
 from datetime import datetime
 
@@ -10,19 +18,37 @@ class ChargingStation(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "available_chargers <= total_chargers", name="check_available_chargers"
+            "available_chargers <= total_chargers",
+            name="check_available_chargers",
         ),
     )
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
-    name = Column(String, nullable=False)
+    name = Column(
+        String,
+        nullable=False,
+    )
 
-    location_name = Column(String, nullable=False)
+    location_name = Column(
+        String,
+        nullable=False,
+    )
 
-    total_chargers = Column(Integer, nullable=False)
+    total_chargers = Column(
+        Integer,
+        nullable=False,
+    )
 
-    available_chargers = Column(Integer, nullable=False)
+    available_chargers = Column(
+        Integer,
+        nullable=False,
+        default=4,
+    )
 
     max_power_kw = Column(
         Integer,
@@ -34,6 +60,11 @@ class ChargingStation(Base):
         Integer,
         nullable=False,
         default=0,
+    )
+
+    vehicles = relationship(
+        "Vehicle",
+        back_populates="charging_station",
     )
 
     created_at = Column(
