@@ -40,17 +40,31 @@ def get_stations(db: Session = Depends(get_db)):
     return db.query(ChargingStation).all()
 
 
-@router.get("/stations/{station_id}")
-def get_station(station_id: int, db: Session = Depends(get_db)):
-    station = db.query(ChargingStation).filter(ChargingStation.id == station_id).first()
+
+
+@router.get("/stations/by-id/{station_id}")
+def get_station(
+    station_id: int,
+    db: Session = Depends(get_db),
+):
+    station = (
+        db.query(ChargingStation)
+        .filter(
+            ChargingStation.id == station_id
+        )
+        .first()
+    )
 
     if station is None:
-        raise HTTPException(status_code=404, detail="Station not found")
+        raise HTTPException(
+            status_code=404,
+            detail="Station not found",
+        )
 
     return station
 
 
-@router.put("/stations/{station_id}")
+@router.put("/stations/by-id/{station_id}")
 def update_station(
     station_id: int, station_data: ChargingStationUpdate, db: Session = Depends(get_db)
 ):
@@ -76,7 +90,7 @@ def update_station(
     }
 
 
-@router.delete("/stations/{station_id}")
+@router.delete("/stations/by-id/{station_id}")
 def delete_station(station_id: int, db: Session = Depends(get_db)):
     station = db.query(ChargingStation).filter(ChargingStation.id == station_id).first()
 
