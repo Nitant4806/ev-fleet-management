@@ -13,18 +13,9 @@ from app.services.charging_dispatcher import (
 
 db = SessionLocal()
 
-vehicle = (
-    db.query(Vehicle)
-    .filter(
-        Vehicle.status == VehicleStatus.AVAILABLE
-    )
-    .first()
-)
+vehicle = db.query(Vehicle).filter(Vehicle.status == VehicleStatus.AVAILABLE).first()
 
-station = (
-    db.query(ChargingStation)
-    .first()
-)
+station = db.query(ChargingStation).first()
 
 print("Before")
 print("Vehicle Status:", vehicle.status)

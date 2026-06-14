@@ -32,7 +32,6 @@ from app.models.charging_station import ChargingStation
 from app.models.vehicle import Vehicle
 
 
-
 def process_pending_trips(db):
 
     now = get_simulated_time()
@@ -163,15 +162,9 @@ def run_simulation_cycle(db):
 
     process_completed_trips(db)
 
-    recommendations = (
-        process_fleet_risks(db)
-    )
+    recommendations = process_fleet_risks(db)
 
-    priority_queue = (
-        build_priority_queue(
-            recommendations
-        )
-    )
+    priority_queue = build_priority_queue(recommendations)
 
     for item in priority_queue:
 
@@ -181,27 +174,14 @@ def run_simulation_cycle(db):
         ]:
             continue
 
-        vehicle = (
-            db.query(Vehicle)
-            .filter(
-                Vehicle.id
-                == item["vehicle_id"]
-            )
-            .first()
-        )
+        vehicle = db.query(Vehicle).filter(Vehicle.id == item["vehicle_id"]).first()
 
-        if (
-            vehicle.status
-            == VehicleStatus.CHARGING
-        ):
+        if vehicle.status == VehicleStatus.CHARGING:
             continue
 
         station = (
             db.query(ChargingStation)
-            .filter(
-                ChargingStation.name
-                == item["best_station"]
-            )
+            .filter(ChargingStation.name == item["best_station"])
             .first()
         )
 

@@ -25,47 +25,28 @@ def run_cycle(
     db: Session = Depends(get_db),
 ):
 
-    priority_queue = (
-        run_simulation_cycle(db)
-    )
+    priority_queue = run_simulation_cycle(db)
 
     return {
         "message": "Simulation cycle completed",
-        "priority_count": len(
-            priority_queue
-        ),
+        "priority_count": len(priority_queue),
     }
+
 
 @router.get("/status")
 def simulation_status(
     db: Session = Depends(get_db),
 ):
 
-    vehicles = (
-        db.query(Vehicle).count()
-    )
+    vehicles = db.query(Vehicle).count()
 
-    trips = (
-        db.query(Trip).count()
-    )
+    trips = db.query(Trip).count()
 
     charging = (
-        db.query(Vehicle)
-        .filter(
-            Vehicle.status
-            == VehicleStatus.CHARGING
-        )
-        .count()
+        db.query(Vehicle).filter(Vehicle.status == VehicleStatus.CHARGING).count()
     )
 
-    active_trips = (
-        db.query(Trip)
-        .filter(
-            Trip.status
-            == TripStatus.IN_PROGRESS
-        )
-        .count()
-    )
+    active_trips = db.query(Trip).filter(Trip.status == TripStatus.IN_PROGRESS).count()
 
     return {
         "vehicles": vehicles,

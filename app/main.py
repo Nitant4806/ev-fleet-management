@@ -21,7 +21,9 @@ from app.routes.fleet import (
 from app.routes.stations import (
     router as stations_router,
 )
-
+from app.routes.analytics import (
+    router as analytics_router,
+)
 
 app = FastAPI(
     title="EV Fleet Management API",
@@ -37,17 +39,12 @@ app.include_router(charging_session_router)
 app.include_router(auth_router)
 app.include_router(user_router)
 
-app.include_router(
-    simulation_router
-)
+app.include_router(simulation_router)
 
-app.include_router(
-    fleet_router
-)
+app.include_router(fleet_router)
 
-app.include_router(
-    stations_router
-)
+app.include_router(stations_router)
+app.include_router(analytics_router)
 
 
 @app.get("/")

@@ -12,19 +12,11 @@ from app.services.simulation_runner import (
 
 db = SessionLocal()
 
-vehicle = (
-    db.query(Vehicle)
-    .filter(
-        Vehicle.id == 127
-    )
-    .first()
-)
+vehicle = db.query(Vehicle).filter(Vehicle.id == 127).first()
 
 vehicle.current_soc = 15
 
-vehicle.status = (
-    VehicleStatus.AVAILABLE
-)
+vehicle.status = VehicleStatus.AVAILABLE
 
 vehicle.charging_station_id = None
 
@@ -68,9 +60,7 @@ for cycle in range(1, 10):
     if vehicle.status == VehicleStatus.AVAILABLE:
 
         print()
-        print(
-            "Vehicle became AVAILABLE again."
-        )
+        print("Vehicle became AVAILABLE again.")
 
         break
 

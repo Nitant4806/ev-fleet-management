@@ -40,20 +40,12 @@ def get_stations(db: Session = Depends(get_db)):
     return db.query(ChargingStation).all()
 
 
-
-
 @router.get("/stations/by-id/{station_id}")
 def get_station(
     station_id: int,
     db: Session = Depends(get_db),
 ):
-    station = (
-        db.query(ChargingStation)
-        .filter(
-            ChargingStation.id == station_id
-        )
-        .first()
-    )
+    station = db.query(ChargingStation).filter(ChargingStation.id == station_id).first()
 
     if station is None:
         raise HTTPException(

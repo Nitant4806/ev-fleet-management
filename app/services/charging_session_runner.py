@@ -47,6 +47,4 @@ def process_charging_sessions(db):
 
             vehicle.status = VehicleStatus.AVAILABLE
 
-            
-           
     db.commit()
