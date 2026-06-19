@@ -15,6 +15,10 @@ from app.models.vehicle import Vehicle
 from app.core.enums import (
     VehicleStatus,
 )
+from app.services.cache_service import (
+    get_cache,
+    set_cache,
+)
 
 router = APIRouter(
     prefix="/fleet",
@@ -27,9 +31,30 @@ def get_priorities(
     db: Session = Depends(get_db),
 ):
 
+    CACHE_KEY = "fleet:priorities"
+
+    cached = get_cache(CACHE_KEY)
+
+    if cached:
+
+        print("RETURNING FROM CACHE")
+
+        return cached
+
+        print("BUILDING PRIORITIES FROM DB")
+
+    if cached:
+        return cached
+
     recommendations = process_fleet_risks(db)
 
     queue = build_priority_queue(recommendations)
+
+    set_cache(
+        CACHE_KEY,
+        queue,
+        ttl=30,
+    )
 
     return queue
 

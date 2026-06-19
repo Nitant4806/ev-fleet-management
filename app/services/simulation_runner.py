@@ -20,6 +20,7 @@ from app.services.charging_optimizer_service import (
 from app.services.fleet_priority_service import (
     build_priority_queue,
 )
+
 from app.services.charging_dispatcher import (
     assign_vehicle_to_station,
 )
@@ -28,8 +29,18 @@ from app.services.charging_session_runner import (
     process_charging_sessions,
 )
 
-from app.models.charging_station import ChargingStation
-from app.models.vehicle import Vehicle
+from app.services.charging_target_service import (
+    calculate_target_soc,
+)
+from app.services.backtest_tracker import (
+    tracker,
+)
+from app.services.cache_service import (
+    delete_cache,
+)
+from app.services.event_service import (
+    publish_event,
+)
 
 
 def process_pending_trips(db):
@@ -56,6 +67,12 @@ def process_pending_trips(db):
             )
 
             vehicle.status = VehicleStatus.ON_TRIP
+            publish_event(
+                {
+                    "event": "trip_started",
+                    "vehicle_id": vehicle.id,
+                }
+            )
 
     db.commit()
 
@@ -88,7 +105,10 @@ def process_completed_trips(db):
 
             vehicle.current_soc = max(
                 0,
-                round(vehicle.current_soc, 2),
+                round(
+                    vehicle.current_soc,
+                    2,
+                ),
             )
 
             vehicle.status = VehicleStatus.RETURNED
@@ -110,6 +130,8 @@ def process_fleet_risks(db):
         )
         .all()
     )
+
+    pending_trips = db.query(Trip).filter(Trip.status == TripStatus.PENDING).count()
 
     stations = db.query(ChargingStation).all()
 
@@ -134,13 +156,24 @@ def process_fleet_risks(db):
             next_trip.scheduled_start_at - get_simulated_time()
         ).total_seconds() / 60
 
+        print(
+            f"Vehicle={vehicle.id}",
+            f"Trip={next_trip.id}",
+            f"Departure={next_trip.scheduled_start_at}",
+            f"Now={get_simulated_time()}",
+            f"Minutes={minutes_until_departure}",
+        )
+
         if minutes_until_departure <= 0:
+            print("SKIP -> departure passed")
             continue
 
-        if minutes_until_departure > 360:
+        if minutes_until_departure > 1440:
+            print("SKIP -> too far in future")
             continue
 
         recommendation = generate_charging_recommendation(
+            db=db,
             vehicle=vehicle,
             trip=next_trip,
             stations=stations,
@@ -168,15 +201,30 @@ def run_simulation_cycle(db):
 
     for item in priority_queue:
 
+        if item["deficit"] <= 0:
+            continue
+
         if item["priority"] not in [
             "HIGH",
             "CRITICAL",
         ]:
             continue
 
+        if not item["best_station"]:
+            continue
+
         vehicle = db.query(Vehicle).filter(Vehicle.id == item["vehicle_id"]).first()
 
-        if vehicle.status == VehicleStatus.CHARGING:
+        if vehicle is None:
+            continue
+
+        if vehicle.charging_station_id:
+            continue
+
+        if vehicle.status not in [
+            VehicleStatus.AVAILABLE,
+            VehicleStatus.RETURNED,
+        ]:
             continue
 
         station = (
@@ -185,14 +233,26 @@ def run_simulation_cycle(db):
             .first()
         )
 
-        if station:
+        if station is None:
+            continue
 
-            assign_vehicle_to_station(
-                db=db,
-                vehicle=vehicle,
-                station=station,
-            )
+        if station.available_chargers <= 0:
+            tracker.rejected_dispatches += 1
+            continue
+
+        target_soc = calculate_target_soc(item["required_soc"])
+
+        assign_vehicle_to_station(
+            db=db,
+            vehicle=vehicle,
+            station=station,
+            target_soc=target_soc,
+        )
 
     process_charging_sessions(db)
+
+    delete_cache("fleet:analytics")
+    delete_cache("stations:analytics")
+    delete_cache("fleet:priorities")
 
     return priority_queue

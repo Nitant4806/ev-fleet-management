@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     DB_PORT: str
     DB_NAME: str
 
+    REDIS_HOST: str
+    REDIS_PORT: int
+
     class Config:
         env_file = ".env"
 

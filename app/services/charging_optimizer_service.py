@@ -1,7 +1,3 @@
-from app.models.vehicle import Vehicle
-from app.models.trip import Trip
-from app.models.charging_station import ChargingStation
-
 from app.services.risk_monitor_service import (
     evaluate_vehicle_risk,
 )
@@ -13,10 +9,10 @@ from app.services.station_service import (
 
 
 def generate_charging_recommendation(
-    vehicle: Vehicle,
-    trip: Trip,
-    stations: list[ChargingStation],
-    drain_rate_per_hour: float = 4,
+    db,
+    vehicle,
+    trip,
+    stations,
 ) -> dict:
 
     risk = evaluate_vehicle_risk(
@@ -44,10 +40,30 @@ def generate_charging_recommendation(
         }
 
     best_station_result = find_best_station(
+        db=db,
         vehicle=vehicle,
         stations=stations,
         soc_needed=risk["deficit"],
     )
+
+    if best_station_result["station_name"] is None:
+
+        return {
+            "vehicle_id": vehicle.id,
+            "trip_id": trip.id,
+            "risk_score": risk["risk_score"],
+            "required_soc": risk["required_soc"],
+            "projected_soc": risk["projected_soc"],
+            "deficit": risk["deficit"],
+            "best_station": None,
+            "travel_time": None,
+            "queue_time": None,
+            "charge_time": None,
+            "total_delay": None,
+            "buffer": None,
+            "feasible": False,
+            "recommendation": "No station available",
+        }
 
     best_station = next(
         station
@@ -56,16 +72,16 @@ def generate_charging_recommendation(
     )
 
     feasibility = evaluate_station_feasibility(
+        db=db,
         vehicle=vehicle,
         trip=trip,
         station=best_station,
         soc_needed=risk["deficit"],
     )
 
-    if feasibility["feasible"]:
-        recommendation = "Dispatch immediately"
-    else:
-        recommendation = "Trip at risk"
+    recommendation = (
+        "Dispatch immediately" if feasibility["feasible"] else "Trip at risk"
+    )
 
     return {
         "vehicle_id": vehicle.id,

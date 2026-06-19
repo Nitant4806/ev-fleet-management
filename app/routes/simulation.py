@@ -13,6 +13,9 @@ from app.core.enums import (
     VehicleStatus,
     TripStatus,
 )
+from app.services.event_service import (
+    publish_event,
+)
 
 router = APIRouter(
     prefix="/simulation",
@@ -26,6 +29,13 @@ def run_cycle(
 ):
 
     priority_queue = run_simulation_cycle(db)
+
+    publish_event(
+        {
+            "event": "simulation_updated",
+            "priority_count": len(priority_queue),
+        }
+    )
 
     return {
         "message": "Simulation cycle completed",

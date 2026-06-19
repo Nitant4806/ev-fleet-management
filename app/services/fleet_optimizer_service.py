@@ -43,6 +43,7 @@ def optimize_fleet(
             continue
 
         recommendation = generate_charging_recommendation(
+            db=db,
             vehicle=vehicle,
             trip=vehicle_trip,
             stations=stations,

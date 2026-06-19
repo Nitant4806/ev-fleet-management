@@ -6,33 +6,33 @@ from app.core.enums import (
     VehicleStatus,
 )
 
+
 from app.services.simulation_runner import (
     run_simulation_cycle,
 )
 
 db = SessionLocal()
 
-vehicle = db.query(Vehicle).filter(Vehicle.id == 127).first()
+vehicle_id = 130
 
-vehicle.current_soc = 15
-
-vehicle.status = VehicleStatus.AVAILABLE
-
-vehicle.charging_station_id = None
-
-db.commit()
+vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
 
 print()
 print("===== START TEST =====")
 
-for cycle in range(1, 10):
+for cycle in range(1, 15):
 
     print()
     print(f"===== CYCLE {cycle} =====")
 
-    queue = run_simulation_cycle(db)
+    run_simulation_cycle(db)
 
     db.refresh(vehicle)
+
+    print(
+        "Vehicle:",
+        vehicle.id,
+    )
 
     print(
         "SOC:",
@@ -49,19 +49,14 @@ for cycle in range(1, 10):
         vehicle.charging_station_id,
     )
 
-    if queue:
+    print(
+        "Target SOC:",
+        vehicle.target_soc,
+    )
 
-        print(
-            "Top Priority:",
-            queue[0]["vehicle_id"],
-            queue[0]["priority"],
-        )
-
-    if vehicle.status == VehicleStatus.AVAILABLE:
-
+    if vehicle.status == VehicleStatus.AVAILABLE and vehicle.target_soc is None:
         print()
-        print("Vehicle became AVAILABLE again.")
-
+        print("Charging completed.")
         break
 
 print()

@@ -1,172 +1,188 @@
-# ⚡ EV Fleet Optimization System
+# AI-Powered EV Fleet Charging Optimization Platform
 
-## 📌 Overview
+## Overview
 
-Electric Vehicles (EVs) are increasingly used in public transport, logistics, and ride-hailing services. However, managing an EV fleet efficiently is challenging due to **limited battery capacity**, **charging constraints**, and **dynamic traffic conditions**.
+An intelligent EV fleet management platform that optimizes charging decisions for electric vehicle fleets.
 
-This project focuses on building a **software-driven, intelligent EV Fleet Optimization System** that helps fleet operators make **real-time decisions** about vehicle assignment, charging, and routing — without modifying EV hardware or chargers.
+The system analyzes:
 
----
+* Vehicle battery levels
+* Upcoming trips
+* Charging station availability
+* Queue times
+* Fleet-wide charging demand
 
-## 🎯 Project Goal
+and automatically determines:
 
-> **Optimize the utilization and availability of an electric vehicle fleet by intelligently coordinating trips, charging, and routing under battery, charger, and traffic constraints.**
-
----
-
-## ❗ Problems Addressed
-
-- EVs have limited battery and require timely charging
-- Charging stations are limited and can become congested
-- Fleet operators lack real-time visibility of vehicle availability
-- Traffic and energy consumption vary dynamically
-- Poor coordination leads to idle vehicles during peak demand
+* Which vehicles should charge
+* Which charging station should be selected
+* Charging priority levels
+* Fleet risk scores
 
 ---
 
-## 🧠 Solution Approach
+## Features
 
-This project introduces a **centralized intelligence layer** that:
+### Fleet Optimization Engine
 
-- Continuously monitors fleet state (vehicles + chargers)
-- Predicts near-future battery depletion and congestion
-- Dynamically assigns vehicles to trips
-- Allocates chargers efficiently
-- Provides real-time visibility via a dashboard
+* Risk-based charging recommendations
+* Priority queue generation
+* Charging deficit calculation
+* Station selection optimization
 
-The system works entirely at the **software and system level**, using simulation where needed.
+### Fleet Simulation Engine
 
----
+* Vehicle trip simulation
+* Battery consumption modeling
+* Charging session simulation
+* Time-based fleet operations
 
-## 🧩 System Components
+### Real-Time Updates
 
-### 🚗 Vehicles
-- Send real-time data:
-  - Location
-  - Battery percentage
-  - Trip status
+* WebSocket support
+* Charging started events
+* Charging completed events
+* Vehicle available events
+* Station utilization updates
 
-### 🔌 Chargers
-- Track:
-  - Availability (free / busy / maintenance)
-  - Distance from vehicles
-  - Estimated waiting time
+### Redis Caching
 
-### 🖥️ Backend / Server
-- Receives real-time data from vehicles and chargers
-- Performs:
-  - Trip assignment
-  - Charger allocation
-  - Route and energy-aware scheduling
+Cached endpoints:
 
-### 📊 Dashboard
-- Provides fleet operators with:
-  - Live vehicle locations
-  - Battery levels
-  - Charger usage
-  - Predicted delays and alerts
+* GET /analytics/fleet
+* GET /analytics/stations
+* GET /fleet/priorities
 
----
+### AI Operations Layer
 
-## 🔄 Real-Time Workflow
+#### Fleet Manager Agent
 
-1. Vehicle sends update to backend (battery, location, status)
-2. Backend evaluates fleet-wide conditions
-3. System decides:
-   - Assign next trip **or**
-   - Send vehicle to optimal charger
-4. ML models predict:
-   - Battery usage
-   - Traffic impact
-   - Charger congestion
-5. Dashboard updates in real time
+Answers:
 
----
+* Which vehicles are critical?
+* What needs attention right now?
 
-## 🛠️ Core Features (Software-Only)
+#### Charging Advisor Agent
 
-| Feature | Description |
-|------|-----------|
-| Vehicle registration & tracking | Add and monitor EVs in the fleet |
-| Dynamic trip assignment | Assign trips based on battery & availability |
-| Charger allocation | Efficient charger scheduling |
-| Battery prediction | Predict energy usage for upcoming trips |
-| Route optimization | Battery-aware route recommendations |
-| Dashboard | Real-time fleet monitoring |
+Answers:
 
-> The system can start with **5–10 simulated EVs** and scale to **100+ vehicles**.
+* Why was vehicle selected?
+* Which station should be used?
+
+#### Analytics Agent
+
+Answers:
+
+* Fleet summary
+* Station congestion analysis
+
+#### What-If Agent
+
+Answers:
+
+* What if charging demand increases?
+* What if chargers become unavailable?
 
 ---
 
-## 📚 Technical Learning Areas
+## Tech Stack
 
-| Layer | Focus |
-|----|----|
-| Computer Networks | Real-time communication (REST → WebSockets / MQTT) |
-| Backend Development | APIs, state management, assignment logic |
-| System Design | Scalability, fault tolerance, distributed systems |
-| Machine Learning | Battery & traffic prediction models |
+Backend
 
-### Effort Distribution
-- Backend: **40%**
-- System Design: **30%**
-- Computer Networks: **15%**
-- Machine Learning: **15%**
+* FastAPI
+* Python
 
----
+Database
 
-## ⚡ Why This Is Similar to Flash Charging Systems
+* PostgreSQL
+* SQLAlchemy
+* Alembic
 
-| Flash Charging Concept | Fleet Optimization Equivalent |
-|----------------------|-------------------------------|
-| Bus arrival | Vehicle update event |
-| Battery SoC | EV battery level |
-| Charger availability | Charger allocation logic |
-| Energy per stop | Trip energy prediction |
-| Smart control software | Dynamic fleet coordination |
+Caching
 
-**Key idea:**  
-> *Software intelligence replaces hardware inefficiency.*
+* Redis
 
----
+Real-Time
 
-## 🌍 Real-World Relevance
+* WebSockets
 
-This type of fleet optimization system is used by:
-- Ride-hailing companies
-- Logistics and delivery platforms
-- Public transport authorities
+Infrastructure
 
-### Skills Demonstrated
-- Real-time backend systems
-- Distributed system design
-- Event-driven architecture
-- Applied machine learning
-- System-level thinking
+* Docker
+
+Testing
+
+* Pytest
+
+AI Layer
+
+* Multi-Agent Architecture
 
 ---
 
-## 🚀 Project Roadmap (High Level)
+## API Endpoints
 
-1. Simulate EVs, chargers, and trips
-2. Build backend APIs for fleet state management
-3. Implement real-time communication
-4. Add trip & charger assignment logic
-5. Develop dashboard for monitoring
-6. Integrate ML models for prediction
-7. Scale system for large fleets
+### Fleet
+
+GET /fleet/priorities
+
+GET /fleet/charging
+
+### Analytics
+
+GET /analytics/fleet
+
+GET /analytics/stations
+
+### Simulation
+
+POST /simulation/run-cycle
+
+### AI
+
+POST /ai/ask
+
+### WebSocket
+
+/ws/fleet
 
 ---
 
-## ✅ Key Notes
+## Example AI Queries
 
-- No physical EVs or chargers required
-- Fully simulation-based and scalable
-- Industry-relevant and interview-ready
-- Focused on **software intelligence**, not hardware
+Why was vehicle 117 selected?
+
+Which vehicles are critical?
+
+Summarize fleet health.
+
+What should charge next?
+
+What if 50 vehicles need charging at 6 PM?
 
 ---
 
-## 📄 License
+## Running Locally
 
-This project is for educational and research purposes.
+docker compose up -d
+
+alembic upgrade head
+
+python -m app.scripts.seed_data
+
+uvicorn app.main:app --reload
+
+---
+
+## Test Coverage
+
+pytest --cov=app
+
+Current Coverage: 80%
+
+---
+
+## Author
+
+Nitant Hedamba
+

@@ -10,6 +10,10 @@ from app.models.charging_station import ChargingStation
 from app.core.enums import (
     VehicleStatus,
 )
+from app.services.cache_service import (
+    get_cache,
+    set_cache,
+)
 
 router = APIRouter(
     prefix="/analytics",
@@ -21,6 +25,13 @@ router = APIRouter(
 def fleet_analytics(
     db: Session = Depends(get_db),
 ):
+
+    CACHE_KEY = "fleet:analytics"
+
+    cached = get_cache(CACHE_KEY)
+
+    if cached:
+        return cached
 
     total_vehicles = db.query(Vehicle).count()
 
@@ -40,7 +51,7 @@ def fleet_analytics(
 
     avg_soc = db.query(func.avg(Vehicle.current_soc)).scalar()
 
-    return {
+    result = {
         "total_vehicles": total_vehicles,
         "available": available,
         "charging": charging,
@@ -52,11 +63,26 @@ def fleet_analytics(
         ),
     }
 
+    set_cache(
+        CACHE_KEY,
+        result,
+        ttl=30,
+    )
+
+    return result
+
 
 @router.get("/stations")
 def station_analytics(
     db: Session = Depends(get_db),
 ):
+
+    CACHE_KEY = "stations:analytics"
+
+    cached = get_cache(CACHE_KEY)
+
+    if cached:
+        return cached
 
     stations = db.query(ChargingStation).all()
 
@@ -81,5 +107,11 @@ def station_analytics(
                 "queue_time": station.avg_queue_minutes,
             }
         )
+
+    set_cache(
+        CACHE_KEY,
+        result,
+        ttl=30,
+    )
 
     return result

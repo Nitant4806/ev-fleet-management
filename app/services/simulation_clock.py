@@ -3,23 +3,24 @@ from datetime import datetime, timedelta
 
 class SimulationClock:
 
-    SIMULATION_SPEED = 360
-
     def __init__(self):
 
-        self.start_real_time = datetime.utcnow()
-
-        self.start_sim_time = datetime.utcnow()
+        self.current_time = datetime.utcnow()
 
     def now(self):
 
-        elapsed_real_seconds = (
-            datetime.utcnow() - self.start_real_time
-        ).total_seconds()
+        return self.current_time
 
-        elapsed_sim_seconds = elapsed_real_seconds * self.SIMULATION_SPEED
+    def advance_minutes(
+        self,
+        minutes: int,
+    ):
 
-        return self.start_sim_time + timedelta(seconds=elapsed_sim_seconds)
+        self.current_time += timedelta(minutes=minutes)
+
+    def reset(self):
+
+        self.current_time = datetime.utcnow()
 
 
 simulation_clock = SimulationClock()
@@ -28,3 +29,15 @@ simulation_clock = SimulationClock()
 def get_simulated_time():
 
     return simulation_clock.now()
+
+
+def advance_simulation_time(
+    minutes: int,
+):
+
+    simulation_clock.advance_minutes(minutes)
+
+
+def reset_simulation_time():
+
+    simulation_clock.reset()

@@ -95,3 +95,8 @@ class Vehicle(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
     )
+
+    target_soc = Column(
+        Float,
+        nullable=True,
+    )
