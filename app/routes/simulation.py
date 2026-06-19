@@ -27,20 +27,28 @@ router = APIRouter(
 def run_cycle(
     db: Session = Depends(get_db),
 ):
+    try:
 
-    priority_queue = run_simulation_cycle(db)
+        priority_queue = run_simulation_cycle(db)
 
-    publish_event(
-        {
-            "event": "simulation_updated",
+        publish_event(
+            {
+                "event": "simulation_updated",
+                "priority_count": len(priority_queue),
+            }
+        )
+
+        return {
+            "message": "Simulation cycle completed",
             "priority_count": len(priority_queue),
         }
-    )
 
-    return {
-        "message": "Simulation cycle completed",
-        "priority_count": len(priority_queue),
-    }
+    except Exception as e:
+
+        return {
+            "error": str(e),
+            "type": type(e).__name__,
+        }
 
 
 @router.get("/status")
