@@ -16,6 +16,9 @@ from app.core.enums import (
 from app.services.event_service import (
     publish_event,
 )
+from app.scripts.seed_stations import seed_stations
+from app.scripts.seed_vehicles import seed_vehicles
+from app.scripts.seed_trips import seed_trips
 
 router = APIRouter(
     prefix="/simulation",
@@ -71,4 +74,19 @@ def simulation_status(
         "trips": trips,
         "charging_vehicles": charging,
         "active_trips": active_trips,
+    }
+
+
+
+@router.post("/seed")
+def seed_database(
+    db: Session = Depends(get_db),
+):
+
+    seed_stations(db)
+    seed_vehicles(db)
+    seed_trips(db)
+
+    return {
+        "message": "Database seeded successfully"
     }

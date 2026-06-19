@@ -1,10 +1,6 @@
-from app.database import SessionLocal
 from app.models.vehicle import Vehicle
 from app.core.enums import VehicleStatus
-
 import random
-
-db = SessionLocal()
 
 EV_MODELS = [
     "Tata Nexon EV",
@@ -27,28 +23,21 @@ LOCATIONS = [
     "Gandhinagar Central",
 ]
 
-for i in range(100):
 
-    vehicle = Vehicle(
-        vehicle_number=f"GJ18EV{1000+i}",
-        model=random.choice(EV_MODELS),
-        battery_capacity=random.choice([30, 35, 40, 45, 50]),
-        current_soc=random.randint(10, 100),
-        efficiency_kwh_per_km=round(random.uniform(0.12, 0.20), 2),
-        status=random.choice(
-            [
-                VehicleStatus.AVAILABLE.value,
-                VehicleStatus.CHARGING.value,
-                VehicleStatus.ON_TRIP.value,
-                VehicleStatus.MAINTENANCE.value,
-                VehicleStatus.OFFLINE.value,
-            ]
-        ),
-        location_name=random.choice(LOCATIONS),
-    )
+def seed_vehicles(db):
 
-    db.add(vehicle)
+    for i in range(100):
 
-db.commit()
+        vehicle = Vehicle(
+            vehicle_number=f"GJ18EV{1000+i}",
+            model=random.choice(EV_MODELS),
+            battery_capacity=random.choice([30, 35, 40, 45, 50]),
+            current_soc=random.randint(10, 100),
+            efficiency_kwh_per_km=round(random.uniform(0.12, 0.20), 2),
+            status=VehicleStatus.AVAILABLE.value,
+            location_name=random.choice(LOCATIONS),
+        )
 
-print("100 vehicles inserted")
+        db.add(vehicle)
+
+    db.commit()
