@@ -40,6 +40,8 @@ from app.models.charging_session import ChargingSession
 from app.models.user import User
 
 Base.metadata.create_all(bind=engine)
+print("TABLES REGISTERED")
+print(list(Base.metadata.tables.keys()))
 
 app = FastAPI(
     title="EV Fleet Management API",
