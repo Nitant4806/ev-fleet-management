@@ -30,6 +30,16 @@ from app.routes.websocket import (
 from app.routes.ai import (
     router as ai_router,
 )
+from app.database import engine, Base
+
+# Import all models
+from app.models.vehicle import Vehicle
+from app.models.trip import Trip
+from app.models.charging_station import ChargingStation
+from app.models.charging_session import ChargingSession
+from app.models.user import User
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="EV Fleet Management API",
