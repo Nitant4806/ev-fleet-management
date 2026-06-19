@@ -1,0 +1,29 @@
+services:
+
+* type: web
+  name: ev-fleet-api
+  env: docker
+  plan: free
+
+  envVars:
+
+  * key: DB_USER
+    sync: false
+
+  * key: DB_PASSWORD
+    sync: false
+
+  * key: DB_HOST
+    sync: false
+
+  * key: DB_PORT
+    sync: false
+
+  * key: DB_NAME
+    sync: false
+
+  * key: REDIS_HOST
+    sync: false
+
+  * key: REDIS_PORT
+    sync: false
