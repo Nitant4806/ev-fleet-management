@@ -1,188 +1,483 @@
-# AI-Powered EV Fleet Charging Optimization Platform
+# 🚗 AI-Powered EV Fleet Charging Optimization Platform
 
-## Overview
+## Live Demo
 
-An intelligent EV fleet management platform that optimizes charging decisions for electric vehicle fleets.
+API Documentation:
 
-The system analyzes:
+https://ev-fleet-management-mekv.onrender.com/docs
+
+---
+
+# Overview
+
+The AI-Powered EV Fleet Charging Optimization Platform is an intelligent fleet management system designed to optimize charging decisions for electric vehicle fleets.
+
+Traditional fleet management systems often charge vehicles using simple rules such as:
+
+* First Come First Serve (FCFS)
+* Fixed battery thresholds
+* Manual charging decisions
+
+These approaches frequently lead to:
+
+* Charger congestion
+* Unnecessary charging sessions
+* Vehicle downtime
+* Missed trips
+* Poor fleet utilization
+
+This platform introduces a risk-based charging optimization engine that continuously evaluates:
 
 * Vehicle battery levels
-* Upcoming trips
+* Upcoming trip requirements
+* Trip urgency
 * Charging station availability
-* Queue times
-* Fleet-wide charging demand
+* Charger occupancy
+* Queue delays
 
 and automatically determines:
 
 * Which vehicles should charge
-* Which charging station should be selected
+* Which station should be selected
 * Charging priority levels
-* Fleet risk scores
+* Charging targets
+* Fleet risk status
+
+The system also includes real-time updates, Redis caching, simulation-based backtesting, and an AI operations layer capable of answering fleet-related questions.
 
 ---
 
-## Features
+# Key Features
 
-### Fleet Optimization Engine
+## Intelligent Charging Optimization
 
-* Risk-based charging recommendations
-* Priority queue generation
-* Charging deficit calculation
-* Station selection optimization
+The optimization engine evaluates fleet-wide charging demand and prioritizes vehicles based on:
 
-### Fleet Simulation Engine
+* Battery deficit
+* Required State of Charge (SOC)
+* Upcoming trip urgency
+* Charging station availability
+* Charging delay impact
 
-* Vehicle trip simulation
-* Battery consumption modeling
-* Charging session simulation
-* Time-based fleet operations
+The optimizer generates:
 
-### Real-Time Updates
+* Risk scores
+* Priority levels
+* Charging recommendations
+* Station recommendations
 
-* WebSocket support
-* Charging started events
-* Charging completed events
-* Vehicle available events
-* Station utilization updates
+---
 
-### Redis Caching
+## Fleet Simulation Engine
 
-Cached endpoints:
+A complete simulation environment models:
 
-* GET /analytics/fleet
-* GET /analytics/stations
-* GET /fleet/priorities
+* Vehicle dispatch
+* Trip execution
+* Battery consumption
+* Charging sessions
+* Vehicle returns
 
-### AI Operations Layer
+This allows realistic testing of charging strategies before deployment.
 
-#### Fleet Manager Agent
+---
+
+## Risk Monitoring System
+
+Each vehicle is continuously analyzed to determine:
+
+* Projected battery level
+* Required battery level
+* Charging deficit
+* Risk score
+
+Vehicles are automatically classified into:
+
+* LOW
+* MEDIUM
+* HIGH
+* CRITICAL
+
+priority categories.
+
+---
+
+## Dynamic Charging Dispatch
+
+Vehicles are automatically dispatched to charging stations when:
+
+* Charging is required
+* Chargers are available
+* The recommendation is feasible
+
+The system dynamically manages charger allocation and utilization.
+
+---
+
+## Real-Time WebSocket Events
+
+The platform provides live fleet updates using WebSockets.
+
+Examples:
+
+### Charging Started
+
+```json
+{
+  "event": "charging_started",
+  "vehicle_id": 117,
+  "station": "Gift City Supercharger",
+  "target_soc": 80
+}
+```
+
+### Charging Completed
+
+```json
+{
+  "event": "charging_completed",
+  "vehicle_id": 117,
+  "soc": 80
+}
+```
+
+### Vehicle Available
+
+```json
+{
+  "event": "vehicle_available",
+  "vehicle_id": 117
+}
+```
+
+### Station Utilization Updated
+
+```json
+{
+  "event": "station_utilization_updated",
+  "station": "Gift City Supercharger"
+}
+```
+
+---
+
+## Redis Caching Layer
+
+To reduce database load and improve API response times, Redis caching is used.
+
+Cached Endpoints:
+
+### Fleet Analytics
+
+```http
+GET /analytics/fleet
+```
+
+### Station Analytics
+
+```http
+GET /analytics/stations
+```
+
+### Fleet Priorities
+
+```http
+GET /fleet/priorities
+```
+
+Cache invalidation occurs automatically after simulation cycles.
+
+---
+
+## AI Operations Layer
+
+The platform includes a multi-agent AI layer capable of answering operational questions.
+
+### Fleet Manager Agent
 
 Answers:
 
 * Which vehicles are critical?
-* What needs attention right now?
+* What requires attention right now?
+* What is the fleet health?
 
-#### Charging Advisor Agent
+---
+
+### Charging Advisor Agent
 
 Answers:
 
 * Why was vehicle selected?
-* Which station should be used?
+* Why was a station selected?
+* What should charge next?
 
-#### Analytics Agent
+---
+
+### Analytics Agent
 
 Answers:
 
 * Fleet summary
-* Station congestion analysis
-
-#### What-If Agent
-
-Answers:
-
-* What if charging demand increases?
-* What if chargers become unavailable?
+* Station utilization
+* Fleet statistics
 
 ---
 
-## Tech Stack
+### What-If Agent
 
-Backend
+Answers:
 
-* FastAPI
+* What if charging demand doubles?
+* What if chargers become unavailable?
+* What if 50 vehicles need charging at 6 PM?
+
+This enables simulation-driven operational planning.
+
+---
+
+# System Architecture
+
+```text
+                     +----------------------+
+                     |      AI Agents       |
+                     |----------------------|
+                     | Fleet Manager        |
+                     | Charging Advisor     |
+                     | Analytics Agent      |
+                     | What-If Agent        |
+                     +----------+-----------+
+                                |
+                                v
+
++-------------+      +----------------------+
+| WebSockets  |----->|     FastAPI API      |
++-------------+      +----------------------+
+                                |
+          +---------------------+---------------------+
+          |                     |                     |
+          v                     v                     v
+
++----------------+    +----------------+    +----------------+
+| Redis Cache    |    | Optimizer      |    | Simulation     |
++----------------+    +----------------+    +----------------+
+                                |
+                                v
+
+                     +----------------------+
+                     | PostgreSQL Database  |
+                     +----------------------+
+```
+
+---
+
+# Technology Stack
+
+## Backend
+
 * Python
+* FastAPI
 
-Database
+## Database
 
 * PostgreSQL
 * SQLAlchemy
 * Alembic
 
-Caching
+## Caching
 
 * Redis
 
-Real-Time
+## Real-Time Communication
 
 * WebSockets
 
-Infrastructure
+## Infrastructure
 
 * Docker
+* Render
 
-Testing
+## Testing
 
 * Pytest
+* pytest-cov
 
-AI Layer
+## AI Layer
 
 * Multi-Agent Architecture
 
 ---
 
-## API Endpoints
+# API Endpoints
 
-### Fleet
+## Fleet
 
+```http
 GET /fleet/priorities
-
 GET /fleet/charging
-
-### Analytics
-
-GET /analytics/fleet
-
-GET /analytics/stations
-
-### Simulation
-
-POST /simulation/run-cycle
-
-### AI
-
-POST /ai/ask
-
-### WebSocket
-
-/ws/fleet
+```
 
 ---
 
-## Example AI Queries
+## Analytics
 
-Why was vehicle 117 selected?
+```http
+GET /analytics/fleet
+GET /analytics/stations
+```
 
+---
+
+## Simulation
+
+```http
+POST /simulation/run-cycle
+GET /simulation/status
+```
+
+---
+
+## AI
+
+```http
+POST /ai/ask
+```
+
+Example:
+
+```text
 Which vehicles are critical?
 
-Summarize fleet health.
+Summarize fleet health
 
-What should charge next?
+Why was vehicle 119 selected?
 
-What if 50 vehicles need charging at 6 PM?
-
----
-
-## Running Locally
-
-docker compose up -d
-
-alembic upgrade head
-
-python -m app.scripts.seed_data
-
-uvicorn app.main:app --reload
+Show station utilization
+```
 
 ---
 
-## Test Coverage
+## WebSocket
 
+```http
+/ws/fleet
+```
+
+---
+
+# Backtesting Results
+
+The optimizer was compared against a First-Come-First-Serve charging strategy.
+
+## Intelligent Optimizer
+
+* Completed Trips: 197
+* Pending Trips: 303
+* Charging Sessions: 63
+* Rejected Dispatches: 317
+* Average Queue Time: 14 minutes
+* Average Utilization: 60.62%
+
+---
+
+## FCFS Baseline
+
+* Completed Trips: 143
+* Pending Trips: 357
+* Charging Sessions: 167
+* Rejected Dispatches: 24
+* Average Utilization: 60.61%
+
+---
+
+## Result
+
+The optimizer achieved significantly more completed trips while reducing unnecessary charging activity through intelligent charger allocation.
+
+---
+
+# Test Coverage
+
+Current coverage:
+
+```text
+80%+
+```
+
+Run:
+
+```bash
 pytest --cov=app
-
-Current Coverage: 80%
+```
 
 ---
 
-## Author
+# Running Locally
+
+## Clone Repository
+
+```bash
+git clone https://github.com/Nitant4806/ev-fleet-management.git
+cd ev-fleet-management
+```
+
+---
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Run PostgreSQL and Redis
+
+```bash
+docker compose up -d
+```
+
+---
+
+## Apply Migrations
+
+```bash
+alembic upgrade head
+```
+
+---
+
+## Seed Data
+
+```bash
+python -m app.scripts.seed_data
+```
+
+---
+
+## Start Server
+
+```bash
+uvicorn app.main:app --reload
+```
+
+---
+
+# Future Enhancements
+
+* LangGraph-based autonomous agents
+* Predictive charging demand forecasting
+* Fleet-wide reinforcement learning optimization
+* Real-time map visualization
+* Celery-based background task processing
+* Multi-fleet support
+* Cost-aware charging optimization
+
+---
+
+# Author
 
 Nitant Hedamba
 
+Final-Year B.Tech Student
+
+Backend Engineering • Distributed Systems • EV Fleet Optimization
